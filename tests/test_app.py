@@ -1,6 +1,9 @@
 from pathlib import Path
 import shutil
 import subprocess
+import sys
+
+import pytest
 from typer.testing import CliRunner
 
 from scallop.cli import app
@@ -10,6 +13,13 @@ runner = CliRunner()
 
 
 NODE_BUILD_VERSION = "build-node22"
+LEGACY_FIXTURE = Path(
+    f"tests/seas/test1/{NODE_BUILD_VERSION}/test1.exe"
+)
+pytestmark = pytest.mark.skipif(
+    sys.platform != "win32" or not LEGACY_FIXTURE.is_file(),
+    reason="requires generated Windows Node 22 SEA fixtures",
+)
 
 
 def test_unpack_test1_win32():

@@ -1,0 +1,53 @@
+name: test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux / Python 3.11
+            runner: ubuntu-latest
+            python: "3.11"
+          - name: Linux / Python 3.13
+            runner: ubuntu-latest
+            python: "3.13"
+          - name: macOS / Python 3.13
+            runner: macos-latest
+            python: "3.13"
+          - name: Windows / Python 3.13
+            runner: windows-latest
+            python: "3.13"
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26.8.1
+          package-manager-cache: false
+
+      - name: install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install . pytest
+
+      - name: test
+        env:
+          SCALLOP_TEST_REAL_SEA: "1"
+        run: python -m pytest -q
