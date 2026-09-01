@@ -19,6 +19,22 @@ The project serves source code recovery, malware analysis, red-teaming, and SEA 
 
 ¹ On MacOS, repacked binaries will not execute unless they are re-codesigned or manually excluded from codesigning.
 
+Scallop understands all three SEA serialization layouts used by supported
+Node.js releases:
+
+| Layout | Verified Node.js examples | Extra fields |
+|--------|----------------------------|--------------|
+| Legacy | 22.14.0, 23.11.0, 24.0.0 | None |
+| Exec argv | 22.23.2, 24.19.0, 25.6.0 | Header extension and embedded argv |
+| Main module format | 26.0.0, 26.8.1 | Module format plus the exec-argv fields |
+
+Node does not put a version number in a SEA blob. Scallop detects the layout
+by trying the known headers and accepting only a bounds-checked parse that
+consumes the complete blob. Layout changes can be backported within a major
+release line, as happened in Node 22. The modern layouts were verified with
+the GitHub Copilot CLI 1.0.82 binary (Node 24.18.1) and a Node 26.8.1 SEA built
+with an ES module, an asset, and embedded execution arguments.
+
 ## Installation
 
 ```bash
@@ -56,6 +72,9 @@ Important Notes:
 1. Content is repacked in-place.
 2. The Code cache is cleared by default when using this configuration.
 3. *If your SEA is code signed, repacking will make the signature invalid. You'll need to be able to resign the binary to make it valid. If your SEA is not codesigned, everything will work as expected.*
+4. LIEF cannot safely grow the SEA section of a Mach-O binary. On macOS, the
+   serialized replacement must not be larger than the original SEA blob;
+   Scallop reports an error instead of producing a corrupt binary.
 
 
 ### Repack Main Code Resource (script stomped)
@@ -136,3 +155,5 @@ Important Notes:
 1. Content is repacked in-place.
 2. The Code cache is cleared by default when using this configuration.
 3. *If your SEA is code signed, repacking will make the signature invalid. You'll need to be able to resign the binary to make it valid. If your SEA is not codesigned, everything will work as expected.*
+4. On macOS, adding or enlarging an asset cannot make the serialized SEA blob
+   larger than the original section. See the Mach-O limitation above.

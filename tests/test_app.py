@@ -150,12 +150,12 @@ def test_repack_asset_win32():
     result = runner.invoke(app, ["unpack", f"tests/seas/asset/{NODE_BUILD_VERSION}/asset.exe"])
     assert result.exit_code == 0, result.output
 
-    with Path(f'tests/seas/asset/{NODE_BUILD_VERSION}/asset_unpacked/payload_abc_txt').open('wb') as f:
+    with Path(f'tests/seas/asset/{NODE_BUILD_VERSION}/asset_unpacked/payload_abc.txt').open('wb') as f:
         f.write(b'zzz')
 
     result = runner.invoke(app, ["repack-asset", f"tests/seas/asset/{NODE_BUILD_VERSION}/asset_repacked.exe",
                                  "payload/abc.txt",
-                                 f"tests/seas/asset/{NODE_BUILD_VERSION}/asset_unpacked/payload_abc_txt"])
+                                 f"tests/seas/asset/{NODE_BUILD_VERSION}/asset_unpacked/payload_abc.txt"])
     assert result.exit_code == 0, result.output
     assert "Repacked asset successfully!" in result.stdout
     assert "Adding or replacing asset" in result.stdout
@@ -181,12 +181,12 @@ def test_repack_asset_new_win32():
     result = runner.invoke(app, ["unpack", f"tests/seas/asset/{NODE_BUILD_VERSION}/asset.exe"])
     assert result.exit_code == 0, result.output
 
-    with Path(f'tests/seas/asset/{NODE_BUILD_VERSION}/asset_unpacked/payload_abc_txt').open('wb') as f:
+    with Path(f'tests/seas/asset/{NODE_BUILD_VERSION}/asset_unpacked/payload_abc.txt').open('wb') as f:
         f.write(b'zzz')
 
     result = runner.invoke(app, ["repack-asset", f"tests/seas/asset/{NODE_BUILD_VERSION}/asset_repacked.exe",
                                  "payload/zzz.txt",
-                                 f"tests/seas/asset/{NODE_BUILD_VERSION}/asset_unpacked/payload_abc_txt"])
+                                 f"tests/seas/asset/{NODE_BUILD_VERSION}/asset_unpacked/payload_abc.txt"])
     assert result.exit_code == 0, result.output
     assert "Repacked asset successfully!" in result.stdout
     assert "Adding or replacing asset" in result.stdout

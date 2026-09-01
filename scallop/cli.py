@@ -10,6 +10,13 @@ from scallop.sea import SeaBinary, SeaBlobFlags
 app = typer.Typer(help="Scallop CLI - nodejs SEA unpacker, repacker, and script stomper.")
 
 
+def _sanitize_output_name(name: str, fallback: str) -> str:
+    sanitized = re.sub(r"[^a-zA-Z0-9_.-]", "_", name)
+    if sanitized in ("", ".", ".."):
+        return fallback
+    return sanitized
+
+
 @app.command(help="Unpack a node SEA.")
 def unpack(target_binary: str):
     print(":oyster: scallop started in [bold]UNPACK[/bold] mode :oyster:\n")
@@ -27,9 +34,10 @@ def unpack(target_binary: str):
     with (extract_dir / f'raw_sea.blob').open('wb') as f:
         f.write(sea_blob.blob_raw)
 
-    santized_code_path = re.sub(r'[^a-zA-Z0-9_-]', '_', sea_blob.code_path)
-    santized_code_path = re.sub(r'_js$', '.js', santized_code_path)
-    target = (extract_dir / f'{santized_code_path}')
+    sanitized_code_path = _sanitize_output_name(
+        sea_blob.code_path, "main_resource.bin"
+    )
+    target = (extract_dir / f'{sanitized_code_path}')
     print(f"[bold]\t* Extracting main resource to '{target}'...[/bold]")
     with target.open('wb') as f:
         f.write(sea_blob.sea_resource)
@@ -44,10 +52,10 @@ def unpack(target_binary: str):
         for asset_name, asset_data in sea_blob.assets.items():
             if len(asset_name) == 0 and len(asset_data) == 0:
                 continue
-            if len(asset_name) == 0:
-                asset_name = str(uuid4())
-            santized_asset_name = re.sub(r'[^a-zA-Z0-9_-]', '_', asset_name)
-            target = (extract_dir / f'{santized_asset_name}')
+            sanitized_asset_name = _sanitize_output_name(
+                asset_name, str(uuid4())
+            )
+            target = (extract_dir / f'{sanitized_asset_name}')
             print(f"[bold]\t* Extracting asset '{asset_name}' to '{target}'...[/bold]")
             with target.open('wb') as f:
                 f.write(asset_data)
