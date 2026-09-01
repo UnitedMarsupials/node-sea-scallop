@@ -16,8 +16,15 @@ The project serves source code recovery, malware analysis, red-teaming, and SEA 
 | Linux   |           22 |      ✅|    ✅ |    ✅ |          ✅ |
 | MacOS¹  |           23 |      ✅|    ✅ |    ✅ |          ✅ |
 | MacOS¹  |           22 |      ✅|    ✅ |    ✅ |          ✅ |
+| Windows |       26.8.1 |      ✅|    ✅ |       |         ✅² |
+| Linux   |       26.8.1 |      ✅|    ✅ |       |         ✅² |
+| MacOS¹  |       26.8.1 |      ✅|    ✅ |       |         ✅² |
+| MacOS¹  | 24.18.1 (Copilot CLI 1.0.82) | ✅ | ✅ | | |
 
 ¹ On MacOS, repacked binaries will not execute unless they are re-codesigned or manually excluded from codesigning.
+
+² The Node 26 asset-repack test uses a same-size replacement. Blank cells
+have not been tested for that Node version and platform.
 
 Scallop understands all three SEA serialization layouts used by supported
 Node.js releases:
